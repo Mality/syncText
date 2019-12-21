@@ -82,11 +82,21 @@
         // Заводим модель.
         let localDocument = public_newDocument();
         // Реализуем обновление.
+
         function updateLocalDocument(newContent) {
             // TODO: Напиши меня!
             // Нужно взять из localDocument текстовое содержимое через public_getContent,
             // посчитать список правок между oldContent и newContent,
             // применить правки к документу.
+            var oldContent = public_getContent(localDocument);
+            var changes = editList(oldContent, newContent);
+            for (var i = 0; i < changes.length; i++) {
+                if (changes[i].type == "I") {
+                    public_insertAfter(localDocument, changes[i].pos - 1, changes[i].symbol);
+                } else {
+                    public_remove(localDocument, changes[i].pos);
+                }
+            }
         }
 
         // Также полезно посмотреть, как вызывается функция updateLocalDocument.

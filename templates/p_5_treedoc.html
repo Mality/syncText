@@ -65,12 +65,14 @@
                 let d = public_newDocument();
                 public_insertAfter(d, -1, "a");
                 public_insertAfter(d,  0, "b");
+                //debugger;
                 assertEquals(public_getContent(d), "ab");
             },
             function testInsertTwoSymbolsInTheBeginning() {
                 let d = public_newDocument();
                 public_insertAfter(d, -1, "a");
                 public_insertAfter(d, -1, "b");
+                //debugger;
                 assertEquals(public_getContent(d), "ba");
             },
             function testInsertAndRemove() {
@@ -86,6 +88,7 @@
                 public_insertAfter(d,  1, "t");
                 assertEquals(public_getContent(d), "cat");
                 public_replace(d, 1, "u");
+                //debugger;
                 assertEquals(public_getContent(d), "cut");
             },
             function testSerializingEmptyDocumentDoesNotThrow() {
@@ -96,18 +99,19 @@
                 let d1 = public_newDocument();
                 let s1 = public_serializeState(d1);
                 public_mergeWithSerializedState(d1, s1);
-                assertEquals(public_getContent(d), "");
+                
+                assertEquals(public_getContent(d1), "");
             },
             function testCopyCat() {
                 let d1 = public_newDocument();
                 assertEquals(public_getContent(d1), "");
                 public_insertAfter(d1, -1, "c");
                 public_insertAfter(d1,  0, "a");
-                public_insertAfter(d1,  1, "t");
+                public_insertAfter(d1,  1, "t"); 
                 assertEquals(public_getContent(d1), "cat");
                 let s1 = public_serializeState(d1);
-
-                let d2 = public_newDocument();
+                
+                let d2 = public_newDocument();   
                 assertEquals(public_getContent(d2), "");
                 public_mergeWithSerializedState(d2, s1);
                 assertEquals(public_getContent(d2), "cat");
@@ -125,11 +129,12 @@
                 public_mergeWithSerializedState(d2, s1);
                 assertEquals(public_getContent(d2), "ab");
 
+
                 public_insertAfter(d1, 0, "c");
                 assertEquals(public_getContent(d1), "acb");
 
                 public_insertAfter(d2, 1, "d");
-                assertEquals(public_getContent(d1), "abd");
+                assertEquals(public_getContent(d2), "abd");
 
                 let s2 = public_serializeState(d1);
                 let s3 = public_serializeState(d2);
@@ -146,18 +151,18 @@
                 public_insertAfter(d1,  0, "b");
                 assertEquals(public_getContent(d1), "ab");
                 let s1 = public_serializeState(d1);
-
+                
                 let d2 = public_newDocument();
                 assertEquals(public_getContent(d2), "");
                 public_mergeWithSerializedState(d2, s1);
                 assertEquals(public_getContent(d2), "ab");
-
+                
                 public_remove(d1, 0);
                 assertEquals(public_getContent(d1), "b");
-
+                
                 public_remove(d2, 1);
-                assertEquals(public_getContent(d1), "a");
-
+                assertEquals(public_getContent(d2), "a");
+                
                 let s2 = public_serializeState(d1);
                 let s3 = public_serializeState(d2);
                 public_mergeWithSerializedState(d1, s3);

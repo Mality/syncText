@@ -70,6 +70,51 @@
         //
         // !!!!! ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^
         //------------------------------------------------
+
+
+        var url = "ws://" + document.domain + ":" + location.port + "/ws";
+        var ws = new WebSocket(url);
+        var localDocument = public_newDocument();
+
+        // Функция-обработчик при возникновении ошибки соединения.
+        ws.onerror = function(event) {
+            
+        };
+
+        // Функция-обработчик при закрытия соединения.
+        ws.onclose = function(event) {
+            
+        }
+
+        // Функция-обработчик при получении нового сообщения.
+        ws.onmessage = function(event) {
+            if (JSON.parse(event.data) == "help") {
+                ws.send(public_serializeState(localDocument));
+            } else {
+                public_mergeWithSerializedState(localDocument, event.data);
+                $('#integration-textarea').val(public_getContent(localDocument));
+            }
+        };
+
+        // Функция-обработчик при установке соединения.
+        ws.onopen = function(event) {
+            ws.send(JSON.stringify("help"));
+        };
+
+        $("#integration-textarea").on("input", function() {
+            var newContent = $("#integration-textarea").val();
+            var oldContent = public_getContent(localDocument);
+            var changes = editList(oldContent, newContent);
+            for (var i = 0; i < changes.length; i++) {
+                if (changes[i].type == "I") {
+                    public_insertAfter(localDocument, changes[i].pos - 1, changes[i].symbol);
+                } else {
+                    public_remove(localDocument, changes[i].pos);
+                }
+            }
+            ws.send(public_serializeState(localDocument));
+        });
+
         </script>
   </body>
 </html>
