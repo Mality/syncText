@@ -148,6 +148,7 @@ function public_insertAfter(document, index, symbol) {
     if (fff(p, z) || fff(z, q)) debugger;
     if (document.d1s.has(to_str(z))) debugger;
     _applyInsert(document, z, symbol);
+    return z;
 }
 
 // Удалить символ по индексу.
@@ -156,6 +157,7 @@ function public_insertAfter(document, index, symbol) {
 function public_remove(document, index) {
     p = _getPositionByIndex(document, index);
     _applyRemove(document, p);
+    return p;
 }
 
 // Заменить символ по индексу.
@@ -187,7 +189,7 @@ function _getPositionByIndex(document, index) {
             curind++;
         }
     }
-    return [100];
+    return [1000];
 }
 
 function _getIndexByPosition(document, position) {
@@ -252,7 +254,7 @@ function _allocate(document, begin, end) {
     for (var i = 0; i < begin.length; i++) {
         ii = i;
         if (begin[i] != end[i]) {
-            if (begin[i] + 1 != end[i] && Math.random() < 0.2) {
+            if (begin[i] + 1 != end[i] && Math.random() < 0.1) {
                 p.push(begin[i] + 1);
                 return _allocate2(document, p);
             }
@@ -263,7 +265,7 @@ function _allocate(document, begin, end) {
     if (ii == begin.length - 1 && begin[ii] == end[ii]) {
         for (var i = begin.length; i < end.length; i++) {
             if (end[i] != 0) {
-                p.push(Math.floor(Math.random() * end[i]));
+                p.push(Math.min(3, Math.floor(Math.random() * end[i])));
                 if (nan(p) == true) debugger;
                 return _allocate2(document, p);
             }
@@ -274,9 +276,9 @@ function _allocate(document, begin, end) {
     } else {
         p.push(begin[ii]);
         for (var i = ii + 1; i < begin.length; i++) {
-            if (begin[i] != 100) {
-                p.push(begin[i] + 1 + Math.floor(Math.random() * (100 - begin[i])))
-                p.push(begin[i] + 1);
+            if (begin[i] != 1000) {
+                p.push(begin[i] + 1 + Math.min(0, Math.floor(Math.random() * (1000 - begin[i]))))
+                //p.push(begin[i] + 1);
                 if (nan(p) == true) debugger;
                 return _allocate2(document, p);
             }
@@ -361,7 +363,7 @@ function _allocate2(document, pref) {
             document.d1s.add(to_str(pref));
             document.d2.add(to_str(pref));
             pref = copp(pref);
-            pref.push(Math.floor(Math.random() * 100) + 1);
+            pref.push(Math.floor(Math.random() * 1000) + 1);
             if (nan(p) == true) debugger;
         }
         return pref;
