@@ -368,7 +368,7 @@ function _allocate2(document, pref) {
         }
         return pref;
     }
-    pref.push(Math.floor(Math.random() * 101));
+    pref.push(Math.floor(Math.random() * 1001));
     if (nan(p) == true) debugger;
     return _allocate2(document, pref);
 }
