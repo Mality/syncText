@@ -38,10 +38,51 @@ function resCmp(a, b) {
     return b.pos - a.pos;
 }
 
-function editList(left, right) {
+function cntPrefSuf(a, b) {
+    var l = 0;
+    var r = 0;
+    for (var i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] != b[i]) {
+            break;
+        } else {
+            l = i + 1;
+        }
+    }
+    for (var i = 0; i < Math.min(a.length, b.length) - l; i++) {
+        if (a[a.length - i - 1] != b[b.length - i - 1]) {
+            break;
+        } else {
+            r = i + 1;
+        }
+    }
+    var na = "";
+    var nb = "";
+    for (var i = l; i < a.length - r; i++) {
+        na += a[i];
+    }
+    for (var i = l; i < b.length - r; i++) {
+        nb += b[i];
+    }
+    return [na, nb, l];
+}
+function copy(a) {
+    var res = "";
+    for (var i = 0; i < a.length; i++) {
+        res += a[i];
+    }
+    return res;
+}
+
+function editList(ll, rr) {
     var inf = 1e9;
     var dp = [];
     var p = [];
+    var left = copy(ll);
+    var right = copy(rr);
+    var pf = cntPrefSuf(left, right);
+    left = pf[0];
+    right = pf[1];
+    var o = pf[2];
     for (var i = 0; i <= left.length; i++) {
         dp.push([]);
         p.push([]);
@@ -83,6 +124,7 @@ function editList(left, right) {
     var y = right.length;
     while (x != 0 || y != 0) {
         if (p[x][y][2].type != "A") {
+            p[x][y][2].pos += o;
             res.push(p[x][y][2]);
         }
         var buf = x;

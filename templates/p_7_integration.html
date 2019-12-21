@@ -1,43 +1,45 @@
 <!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
 
-        <title>Сириус</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
 
-        <style>
+    <title>Сириус</title>
+
+    <style>
         body {
             padding-top: 5rem;
         }
-        </style>
-    </head>
-    <body>
-        <main role="main" class="container">
-            <div id="the-starter">
-                <h1>Привет, Сириус!</h1>
-                <p class="lead">Минималистичный коллаборативный текстовый редактор с синхронизацией в реальном времени.</p>
+    </style>
+</head>
+
+<body>
+    <main role="main" class="container">
+        <div id="the-starter">
+            <h1>Привет, Сириус!</h1>
+            <p class="lead">Минималистичный коллаборативный текстовый редактор с синхронизацией в реальном времени.</p>
+        </div>
+        <div id="the-integration" class="container">
+            <div class="row">
+                <form class="col">
+                    <div class="form-group">
+                        <textarea id="integration-textarea" class="form-control" rows="12"></textarea>
+                    </div>
+                </form>
             </div>
-            <div id="the-integration" class="container">
-                <div class="row">
-                    <form class="col">
-                        <div class="form-group">
-                            <textarea id="integration-textarea" class="form-control" rows="12"></textarea>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </main>
+        </div>
+    </main>
 
-        <script src="/static/js/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
-        <script src="/static/js//popper.min.js" crossorigin="anonymous"></script>
-        <script src="/static/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js//popper.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
-        <script src="/j/editlist" crossorigin="anonymous"></script>
-        <script src="/j/treedoc" crossorigin="anonymous"></script>
+    <script src="/j/editlist" crossorigin="anonymous"></script>
+    <script src="/j/treedoc" crossorigin="anonymous"></script>
 
-        <script>
+    <script>
         // Этот файл также использует код из
         // - templates/j_editlist.js (четвертый шаг)
         // - templates/j_treedoc.js (пятый шаг)
@@ -73,48 +75,75 @@
 
 
         var url = "ws://" + document.domain + ":" + location.port + "/ws";
+        //var ws = new WebSocket("ws://104.248.26.149:5000/ws");
         var ws = new WebSocket(url);
         var localDocument = public_newDocument();
 
+        function bench(tag, fn) {
+            var b = new Date();
+            var v = fn();
+            var e = new Date();
+            console.log("** " + tag + " took " + (e - b) + "ms");
+            return v;
+        }
+
         // Функция-обработчик при возникновении ошибки соединения.
-        ws.onerror = function(event) {
-            
+        ws.onerror = function (event) {
+
         };
 
         // Функция-обработчик при закрытия соединения.
-        ws.onclose = function(event) {
-            
+        ws.onclose = function (event) {
+
         }
 
         // Функция-обработчик при получении нового сообщения.
-        ws.onmessage = function(event) {
+        ws.onmessage = function (event) {
             if (JSON.parse(event.data) == "help") {
-                ws.send(public_serializeState(localDocument));
+                bench("send", function () {
+                    ws.send(public_serializeState(localDocument));
+                });
             } else {
+                var startIndex = $("#integration-textarea").prop("selectionStart");
+                var startPosition = _getPositionByIndex(localDocument, startIndex);
+                var endIndex = $("#integration-textarea").prop("selectionEnd");
+                var endPosition = _getPositionByIndex(localDocument, endIndex);
+                //debugger;
+                if (startPosition > endPosition) debugger;
+
                 public_mergeWithSerializedState(localDocument, event.data);
                 $('#integration-textarea').val(public_getContent(localDocument));
+
+                startIndex = _getIndexByPosition(localDocument, startPosition);
+                endIndex = _getIndexByPosition(localDocument, endPosition);
+                $("#integration-textarea").get()[0].setSelectionRange(startIndex, endIndex);
             }
         };
 
         // Функция-обработчик при установке соединения.
-        ws.onopen = function(event) {
+        ws.onopen = function (event) {
             ws.send(JSON.stringify("help"));
         };
 
-        $("#integration-textarea").on("input", function() {
+        var counter = 0;
+
+        $("#integration-textarea").on("input", function () {
+            console.log(counter);
+            counter++;
             var newContent = $("#integration-textarea").val();
-            var oldContent = public_getContent(localDocument);
-            var changes = editList(oldContent, newContent);
+            var oldContent = bench("getContent", () => public_getContent(localDocument));
+            var changes = bench("editList", () => editList(oldContent, newContent));
             for (var i = 0; i < changes.length; i++) {
                 if (changes[i].type == "I") {
-                    public_insertAfter(localDocument, changes[i].pos - 1, changes[i].symbol);
+                    bench("insertAfter", () => public_insertAfter(localDocument, changes[i].pos - 1, changes[i].symbol));
                 } else {
-                    public_remove(localDocument, changes[i].pos);
+                    bench("remove", () => public_remove(localDocument, changes[i].pos));
                 }
             }
-            ws.send(public_serializeState(localDocument));
+            bench("send", () => ws.send(public_serializeState(localDocument)));
         });
 
-        </script>
-  </body>
+    </script>
+</body>
+
 </html>

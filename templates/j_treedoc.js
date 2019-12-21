@@ -190,6 +190,20 @@ function _getPositionByIndex(document, index) {
     return [100];
 }
 
+function _getIndexByPosition(document, position) {
+    document.d1.sort(comporator);
+    var curind = 0;
+    for (var i = 0; i < document.d1.length; i++) {
+        if (to_str(document.d1[i][0]) == to_str(position)) {
+            return curind;
+        }
+        if (!document.d2.has(to_str(document.d1[i][0]))) {
+            curind++;
+        }
+    }
+    return document.d1.length - document.d2.size;
+}
+
 
 
 // Аллоцировать новую позицию между двумя границами.
@@ -238,7 +252,7 @@ function _allocate(document, begin, end) {
     for (var i = 0; i < begin.length; i++) {
         ii = i;
         if (begin[i] != end[i]) {
-            if (begin[i] + 1 != end[i] && Math.random() < 0.3) {
+            if (begin[i] + 1 != end[i] && Math.random() < 0.2) {
                 p.push(begin[i] + 1);
                 return _allocate2(document, p);
             }
@@ -335,13 +349,14 @@ function copp(a) {
 
 function _allocate2(document, pref) {
     if (!document.d1s.has(to_str(pref))) {
-        var ok = false;
+        /*var ok = false;
         for (var i = 0; i < pref.length; i++) {
             if (pref[i] != 0) {
                 ok = true;
             }
-        }
-        if (ok == false) {
+        }*/
+        //if (ok == false) {
+        if (pref[pref.length - 1] == 0) {
             document.d1.push([pref, "ff"]);
             document.d1s.add(to_str(pref));
             document.d2.add(to_str(pref));

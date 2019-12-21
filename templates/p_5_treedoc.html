@@ -1,44 +1,46 @@
 <!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
 
-        <title>Сириус</title>
-    
-        <style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
+
+    <title>Сириус</title>
+
+    <style>
         body {
             padding-top: 5rem;
         }
-        </style>
-    </head>
-    <body>
-        <main role="main" class="container">
-            <div id="the-starter">
-                <h1>Привет, Сириус!</h1>
-                <p class="lead">Моделируем документ.</p>
-            </div>
-            <div id="the-treedoc-test-cases" class="container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Тест</th>
-                        </tr>
-                    </thead>
-                    <tbody id="the-treedoc-test-cases-tbody">
-                    </tbody>
-                </table>
-            </div>
-        </main>
+    </style>
+</head>
 
-        <script src="/static/js/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
-        <script src="/static/js//popper.min.js" crossorigin="anonymous"></script>
-        <script src="/static/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<body>
+    <main role="main" class="container">
+        <div id="the-starter">
+            <h1>Привет, Сириус!</h1>
+            <p class="lead">Моделируем документ.</p>
+        </div>
+        <div id="the-treedoc-test-cases" class="container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Тест</th>
+                    </tr>
+                </thead>
+                <tbody id="the-treedoc-test-cases-tbody">
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-        <script src="/j/treedoc" crossorigin="anonymous"></script>
+    <script src="/static/js/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js//popper.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
-        <script>
+    <script src="/j/treedoc" crossorigin="anonymous"></script>
+
+    <script>
         // Основной код расположен в файле templates/j_treedoc.js.
         // Ниже расположен тестирующий код.
 
@@ -64,7 +66,7 @@
             function testInsertTwoSymbolsOneByOne() {
                 let d = public_newDocument();
                 public_insertAfter(d, -1, "a");
-                public_insertAfter(d,  0, "b");
+                public_insertAfter(d, 0, "b");
                 //debugger;
                 assertEquals(public_getContent(d), "ab");
             },
@@ -84,8 +86,8 @@
             function testCatToCut() {
                 let d = public_newDocument();
                 public_insertAfter(d, -1, "c");
-                public_insertAfter(d,  0, "a");
-                public_insertAfter(d,  1, "t");
+                public_insertAfter(d, 0, "a");
+                public_insertAfter(d, 1, "t");
                 assertEquals(public_getContent(d), "cat");
                 public_replace(d, 1, "u");
                 //debugger;
@@ -99,19 +101,19 @@
                 let d1 = public_newDocument();
                 let s1 = public_serializeState(d1);
                 public_mergeWithSerializedState(d1, s1);
-                
+
                 assertEquals(public_getContent(d1), "");
             },
             function testCopyCat() {
                 let d1 = public_newDocument();
                 assertEquals(public_getContent(d1), "");
                 public_insertAfter(d1, -1, "c");
-                public_insertAfter(d1,  0, "a");
-                public_insertAfter(d1,  1, "t"); 
+                public_insertAfter(d1, 0, "a");
+                public_insertAfter(d1, 1, "t");
                 assertEquals(public_getContent(d1), "cat");
                 let s1 = public_serializeState(d1);
-                
-                let d2 = public_newDocument();   
+
+                let d2 = public_newDocument();
                 assertEquals(public_getContent(d2), "");
                 public_mergeWithSerializedState(d2, s1);
                 assertEquals(public_getContent(d2), "cat");
@@ -120,7 +122,7 @@
                 let d1 = public_newDocument();
                 assertEquals(public_getContent(d1), "");
                 public_insertAfter(d1, -1, "a");
-                public_insertAfter(d1,  0, "b");
+                public_insertAfter(d1, 0, "b");
                 assertEquals(public_getContent(d1), "ab");
                 let s1 = public_serializeState(d1);
 
@@ -148,21 +150,21 @@
                 let d1 = public_newDocument();
                 assertEquals(public_getContent(d1), "");
                 public_insertAfter(d1, -1, "a");
-                public_insertAfter(d1,  0, "b");
+                public_insertAfter(d1, 0, "b");
                 assertEquals(public_getContent(d1), "ab");
                 let s1 = public_serializeState(d1);
-                
+
                 let d2 = public_newDocument();
                 assertEquals(public_getContent(d2), "");
                 public_mergeWithSerializedState(d2, s1);
                 assertEquals(public_getContent(d2), "ab");
-                
+
                 public_remove(d1, 0);
                 assertEquals(public_getContent(d1), "b");
-                
+
                 public_remove(d2, 1);
                 assertEquals(public_getContent(d2), "a");
-                
+
                 let s2 = public_serializeState(d1);
                 let s3 = public_serializeState(d2);
                 public_mergeWithSerializedState(d1, s3);
@@ -171,7 +173,52 @@
                 assertEquals(public_getContent(d1), "");
                 assertEquals(public_getContent(d2), "");
             },
-        ].forEach(function(testCase) {
+
+            function testPositionSync() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "c");
+                public_insertAfter(d, 0, "a");
+                public_insertAfter(d, 1, "t");
+                assertEquals(public_getContent(d), "cat");
+                for (var i = 0; i <= 3; ++i) {
+                    assertEquals(i, _getIndexByPosition(d, _getPositionByIndex(d, i)));
+                }
+            },
+
+            function testPositionSyncWithInsertions() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "a");
+                var p = _getPositionByIndex(d, 0);
+
+                assertEquals(public_getContent(d), "a");
+                assertEquals(0, _getIndexByPosition(d, p));
+
+                public_insertAfter(d, -1, "b");
+                assertEquals(public_getContent(d), "ba");
+                assertEquals(1, _getIndexByPosition(d, p));
+
+                public_insertAfter(d, -1, "c");
+                assertEquals(public_getContent(d), "cba");
+                assertEquals(2, _getIndexByPosition(d, p));
+            },
+
+            function testPositionSyncWithDeletions() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "c");
+                public_insertAfter(d, 0, "a");
+                public_insertAfter(d, 1, "t");
+                var p = _getPositionByIndex(d, 2);
+
+                assertEquals(public_getContent(d), "cat");
+                assertEquals(2, _getIndexByPosition(d, p));
+                public_remove(d, 0);
+                assertEquals(public_getContent(d), "at");
+                assertEquals(1, _getIndexByPosition(d, p));
+                public_remove(d, 0);
+                assertEquals(public_getContent(d), "t");
+                assertEquals(0, _getIndexByPosition(d, p));
+            },
+        ].forEach(function (testCase) {
             let name = testCase.name;
             let error = false;
             try {
@@ -191,6 +238,7 @@
             html += '</tr>';
             $("#the-treedoc-test-cases-tbody").append(html);
         });
-        </script>
-  </body>
+    </script>
+</body>
+
 </html>
