@@ -287,7 +287,7 @@ function _allocate(document, begin, end) {
             }
         }
     }
-    p.push(Math.floor(Math.random() * 101));
+    p.push(Math.floor(Math.random() * 1001));
     if (nan(p) == true) debugger;
     return _allocate2(document, p);
 }

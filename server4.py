@@ -63,6 +63,7 @@ async def handle_ws():
 
 def main():
     app.config.from_mapping(DEBUG=True, ENV="dev")
+    #app.run(host="0.0.0.0", port=80)
     app.run(host="0.0.0.0")
 
 

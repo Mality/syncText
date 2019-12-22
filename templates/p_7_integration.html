@@ -73,10 +73,8 @@
         // !!!!! ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^
         //------------------------------------------------
 
-
-        //var url = "ws://" + document.domain + ":" + location.port + "/ws";
-        var ws = new WebSocket("ws://104.248.26.149:5000/ws");
-        //var ws = new WebSocket(url);
+        var url = "ws://" + document.domain + ":" + location.port + "/ws";
+        var ws = new WebSocket(url);
         var localDocument = public_newDocument();
 
         var sendingDelay = 100;
@@ -92,7 +90,8 @@
 
         // Функция-обработчик при возникновении ошибки соединения.
         ws.onerror = function (event) {
-
+            console.log("error");
+            debugger;
         };
 
         // Функция-обработчик при закрытия соединения.
@@ -100,10 +99,11 @@
 
         }
 
+        var changesDocument = public_newDocument();
+
         function syncWithText() {
             var newContent = $("#integration-textarea").val();
             var oldContent = bench("getContent", () => public_getContent(localDocument));
-            
             var changes = bench("editList", () => editList(oldContent, newContent));
             for (var i = 0; i < changes.length; i++) {
                 if (changes[i].type == "I") {
@@ -115,14 +115,17 @@
                     changesDocument.d2.add(to_str(position));
                 }
             }
-            if (!flag) {
-                flag = true;
+            
+            if (changesDocument.d1.length > 0 || changesDocument.d2.size > 0) {
                 
-                setTimeout(function() { 
-                    bench("send", () => ws.send(public_serializeState(changesDocument)));
-                    changesDocument = public_newDocument();
-                    flag = false;
-                }, 500);
+                if (!flag) {
+                    flag = true;
+                    setTimeout(function () {
+                        bench("send", () => ws.send(public_serializeState(changesDocument)));
+                        changesDocument = public_newDocument();
+                        flag = false;
+                    }, sendingDelay);
+                }
             }
         }
 
@@ -149,17 +152,12 @@
                 $("#integration-textarea").get()[0].setSelectionRange(startIndex, endIndex);
             }
         };
-
         // Функция-обработчик при установке соединения.
         ws.onopen = function (event) {
             ws.send(JSON.stringify("help"));
-            lastSending = new Date();
         };
 
-        var counter = 0;
-        var changesDocument = public_newDocument();
-
-        $("#integration-textarea").on("input", syncWithText());
+        $("#integration-textarea").on("input", syncWithText);
 
     </script>
 </body>
